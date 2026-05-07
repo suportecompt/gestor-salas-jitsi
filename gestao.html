@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte - Gestão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="icon" href="data:,">
+</head>
+<body class="bg-slate-50 min-h-screen font-sans flex items-center justify-center p-6">
+
+    <main class="w-full max-w-md relative">
+        
+        <div class="bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/60 text-center border border-slate-100 relative overflow-hidden">
+            
+            <div class="absolute top-7 left-8">
+                <img src="logo.png" alt="Logo" class="h-10 w-auto">
+            </div>
+
+            <button id="btn-logout" class="absolute top-6 right-6 bg-slate-50 hover:bg-red-50 p-2.5 rounded-xl text-slate-400 hover:text-red-500 transition-all border border-slate-100">
+                <i data-lucide="log-out" class="w-7 h-7"></i>
+            </button>
+
+            <div class="mt-12 mb-8 flex flex-col items-center">
+                <div class="bg-blue-600 p-4 rounded-[1.5rem] shadow-lg shadow-blue-100 mb-4 text-white">
+                    <i data-lucide="video" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">Videochamada</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2">Clique para activar a sala para o cliente</p>
+            </div>
+
+            <button id="btn-activar-video" class="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 px-6 rounded-2xl transition-all active:scale-[0.97] shadow-xl shadow-blue-100 group">
+                <i data-lucide="zap" class="w-5 h-5 group-hover:fill-white transition-all"></i>
+                <span class="text-base sm:text-lg">Activar Agora</span>
+            </button>
+
+            <div id="status-container" class="mt-8 pt-6 border-t border-slate-50">
+                <div class="flex items-center justify-center gap-2">
+                    <div id="status-dot" class="w-2 h-2 rounded-full bg-slate-300 animate-pulse"></div>
+                    <span id="status-sala" class="text-[10px] font-black text-slate-400 uppercase tracking-widest tracking-[0.1em]">Sistema Pronto</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="custom-confirm" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div id="modal-container" class="bg-white rounded-[2rem] shadow-2xl max-w-sm w-full overflow-hidden transform transition-all scale-95 opacity-0 duration-200 border border-slate-100">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Substituir Sala?</h3>
+                <p class="text-slate-600 text-sm leading-relaxed mb-8">Já existe uma sala ativa. Deseja encerrar a anterior e criar uma nova agora?</p>
+                
+                <div class="flex gap-3">
+                    <button id="confirm-cancel" class="flex-1 px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-all">
+                        Cancelar
+                    </button>
+                    <button id="confirm-accept" class="flex-1 px-4 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 transition-all">
+                        Sim, Criar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+    <script src="main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+            if (!localStorage.getItem('supabase_token')) {
+                window.location.href = 'index.html'; 
+            }
+        });
+    </script>
+</body>
+</html>
