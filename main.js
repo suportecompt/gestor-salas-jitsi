@@ -71,7 +71,7 @@ function mostrarConfirmacionPersonalizada() {
     });
 }
 
-// --- FUNCIÓN CORREGIDA: VERIFICAR ESTADO AL CARGAR ---
+// --- VERIFICAR ESTADO (POLING CADA SEGUNDO) ---
 async function verificarEstadoSala() {
     const statusSala = document.getElementById('status-sala');
     const statusDot = document.getElementById('status-dot');
@@ -81,7 +81,6 @@ async function verificarEstadoSala() {
     try {
         const salas = await SupabaseAPI.obtenerSalas();
         
-        // Verificamos si el array tiene contenido
         if (salas && salas.length > 0) {
             const salaAtiva = salas[0];
             const url = salaAtiva.url_sala || salaAtiva.url; 
@@ -91,26 +90,29 @@ async function verificarEstadoSala() {
                 const ultimaParte = partes[partes.length - 1] || "";
                 const nombreSala = ultimaParte.split('#')[0] || "Sala Ativa";
                 
-                statusSala.innerHTML = `Ativa: <a href="${url}" target="_blank" class="underline hover:text-blue-600 transition-colors font-bold">${nombreSala}</a>`;
+                // Solo actualizamos el HTML si el contenido es diferente (para no molestar al DOM)
+                const nuevoHTML = `Ativa: <a href="${url}" target="_blank" class="underline hover:text-blue-600 transition-colors font-bold">${nombreSala}</a>`;
+                if (statusSala.innerHTML !== nuevoHTML) {
+                    statusSala.innerHTML = nuevoHTML;
+                }
                 
                 if (statusDot) {
                     statusDot.classList.remove('bg-slate-300');
                     statusDot.classList.add('bg-emerald-500');
                 }
-            } else {
-                statusSala.innerText = "Nenhuma chamada activa";
             }
         } else {
-            // Si el array está vacío o no hay salas
-            statusSala.innerText = "Nenhuma chamada activa";
+            if (statusSala.innerText !== "Nenhuma chamada activa") {
+                statusSala.innerText = "Nenhuma chamada activa";
+            }
             if (statusDot) {
                 statusDot.classList.remove('bg-emerald-500');
                 statusDot.classList.add('bg-slate-300');
             }
         }
     } catch (err) {
-        console.error(err);
-        statusSala.innerText = "Nenhuma llamada activa";
+        // En poling constante, mejor no saturar la consola si hay un micro-corte de red
+        statusSala.innerText = "Sincronizando...";
     }
 }
 
@@ -118,7 +120,11 @@ async function verificarEstadoSala() {
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // Verificación inicial
     verificarEstadoSala();
+
+    // ACTIVAR EL POLING: Ejecutar verificarEstadoSala cada 1000ms (1 segundo)
+    setInterval(verificarEstadoSala, 1000);
 
     // --- 1. LÓGICA DE LOGIN ---
     const loginForm = document.getElementById('admin-login-form');
@@ -178,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 mostrarToast("Nova sala ativada!", "sucesso", "video");
                 
+                // Forzamos actualización inmediata
                 await verificarEstadoSala();
 
                 setTimeout(() => {
